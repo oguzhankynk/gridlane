@@ -84,7 +84,8 @@ scripts/portability_demo.sh --bin build/release/apps
 
 A Gray-Scott reaction-diffusion simulation with analysis while it runs
 ([specification](docs/gray-scott.md)). It is a vehicle for the model, not a
-goal: it uses both planes in one program.
+goal: it uses both planes in one program. How it works, how the work is split
+and how the workers exchange data: [`apps/gray_scott/README.md`](apps/gray_scott/README.md).
 
 - **Control plane** (wireforge over pairring over pushseg): the coordinator
   queries every worker application's version, sends the job, sends heartbeats
