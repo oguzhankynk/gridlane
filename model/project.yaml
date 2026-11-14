@@ -1,0 +1,143 @@
+# gridlane control plane: the messages between the coordinator and the workers.
+#
+# Edit this model, then regenerate the code (see model/README.md). The
+# generated code under generated/ is committed and must not be edited by hand.
+schema_version: 1
+project: gridlane_control
+version: "1.0.0"
+description: Control plane of gridlane - version query, job, phases, progress, heartbeats, results.
+namespace: gridlane::control
+defaults: { endian: little, bit_order: lsb_first }
+
+enums:
+  Phase:
+    type: u8
+    values: { distribute: 1, simulate: 2, measure: 3, transfer: 4, analyze: 5, collect: 6 }
+  ShutdownReason:
+    type: u8
+    values: { done: 0, abort: 1 }
+
+types:
+  Version:
+    description: Semantic version.
+    fields:
+      - { name: major, type: u8 }
+      - { name: minor, type: u8 }
+      - { name: patch, type: u8 }
+
+messages:
+  VersionQuery:
+    id: 0x01
+    description: First message to a worker; the worker answers with VersionReply.
+    fields:
+      - { name: protocol, type: Version, description: Control protocol version of the coordinator. }
+      - { name: nonce, type: u32, description: Echoed in the reply. }
+
+  VersionReply:
+    id: 0x02
+    description: A worker's versions and capabilities.
+    fields:
+      - { name: protocol, type: Version, description: Control protocol version of the worker. }
+      - { name: software, type: Version, description: gridlane version of the worker. }
+      - { name: node, type: u16, description: Target the worker runs on. }
+      - { name: app, type: u8, description: Application id. }
+      - { name: inst, type: u8, description: Instance of the application on the target. }
+      - { name: workers, type: u16, min: 1, max: 1024, default: 1, description: Worker threads. }
+      - { name: nonce, type: u32, description: Copied from the query. }
+
+  JobStart:
+    id: 0x10
+    description: Parameters of the Gray-Scott run.
+    fields:
+      - { name: width, type: u32, min: 8, max: 65536, default: 256, units: cells }
+      - { name: height, type: u32, min: 8, max: 65536, default: 256, units: cells }
+      - { name: steps, type: u32, min: 1, default: 1000 }
+      - { name: snapshotEvery, type: u32, min: 1, default: 100, description: Steps between in transit snapshots. }
+      - { name: F, type: f64, min: 0.0, max: 0.1, default: 0.0367, description: Feed rate. }
+      - { name: k, type: f64, min: 0.0, max: 0.1, default: 0.0649, description: Kill rate. }
+      - { name: Du, type: f64, min: 0.0, max: 1.0, default: 0.16, description: Diffusion rate of U. }
+      - { name: Dv, type: f64, min: 0.0, max: 1.0, default: 0.08, description: Diffusion rate of V. }
+      - { name: dt, type: f64, min: 0.0, max: 2.0, default: 1.0, description: Time step. }
+      - { name: seed, type: u64, description: Seed of the initial noise. }
+      - { name: simWorkers, type: u16, min: 1, max: 1024, default: 1, description: Workers in the simulation group. }
+      - { name: analysisWorkers, type: u16, min: 1, max: 1024, default: 1, description: Workers in the analysis group. }
+
+  PhaseStart:
+    id: 0x20
+    description: Starts a phase on every worker.
+    fields:
+      - { name: phase, type: Phase, default: distribute }
+      - { name: step, type: u32, description: Simulation step the phase starts at. }
+
+  PhaseDone:
+    id: 0x21
+    description: A worker finished a phase.
+    fields:
+      - { name: phase, type: Phase, default: distribute }
+      - { name: step, type: u32 }
+      - { name: durationNs, type: u64, units: ns }
+
+  Progress:
+    id: 0x30
+    description: Simulation progress of a worker.
+    fields:
+      - { name: step, type: u32 }
+      - { name: stepNs, type: u64, units: ns, description: Duration of the last step. }
+
+  Heartbeat:
+    id: 0x40
+    description: Periodic liveness query.
+    fields:
+      - { name: seq, type: u32 }
+      - { name: sentNs, type: u64, units: ns, description: Coordinator clock when sent. }
+
+  HeartbeatAck:
+    id: 0x41
+    description: Answer to a heartbeat.
+    fields:
+      - { name: seq, type: u32, description: Copied from the heartbeat. }
+      - { name: sentNs, type: u64, units: ns, description: Copied from the heartbeat. }
+      - { name: workerNs, type: u64, units: ns, description: Worker clock when answered. }
+
+  ResultSummary:
+    id: 0x50
+    description: Checksum and timing of one worker's part of the result.
+    fields:
+      - { name: rank, type: u16 }
+      - { name: tileCrc, type: u32, description: CRC-32C of the worker's final tile. }
+      - { name: sumU, type: f64 }
+      - { name: sumV, type: f64 }
+      - { name: simNs, type: u64, units: ns }
+      - { name: exchangeNs, type: u64, units: ns }
+
+  Shutdown:
+    id: 0x7F
+    description: End of the run.
+    fields:
+      - { name: reason, type: ShutdownReason, default: done }
+
+
+nodes:
+  coordinator: { description: "Starts the job, drives the phases, collects results." }
+  worker: { description: One application; runs one or more worker threads. }
+interfaces:
+  control:
+    version: "1.0.0"
+    nodes: [coordinator, worker]
+    # pairring delivers whole messages and checks them with CRC-32C, so the
+    # interface needs no framing and no checksum of its own.
+    header:
+      fields:
+        - { name: msgId, type: u16, role: message_id }
+    framing: { kind: none }
+    messages:
+      - { name: VersionQuery, from: coordinator }
+      - { name: VersionReply, from: worker }
+      - { name: JobStart, from: coordinator }
+      - { name: PhaseStart, from: coordinator }
+      - { name: PhaseDone, from: worker }
+      - { name: Progress, from: worker }
+      - { name: Heartbeat, from: coordinator }
+      - { name: HeartbeatAck, from: worker }
+      - { name: ResultSummary, from: worker }
+      - { name: Shutdown, from: coordinator }

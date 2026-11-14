@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+# The layers gridlane composes; installed next to it.
+find_dependency(pushseg CONFIG)
+find_dependency(pairring CONFIG)
+
+include("${CMAKE_CURRENT_LIST_DIR}/gridlaneTargets.cmake")
+
+check_required_components(gridlane)
