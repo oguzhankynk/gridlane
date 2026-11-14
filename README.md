@@ -116,7 +116,8 @@ layout over POSIX shared memory.
 
 ## What works today
 
-- The three layers build together, fetched at pinned revisions.
+- The three layers build together, fetched at tagged releases (pushseg `v0.1.0`,
+  pairring `v0.1.0`, wireforge `v0.5.0`).
 - **Data plane composition:** a pairring channel runs over pushseg through the
   region adapter (`include/gridlane/glue/pushseg_region.hpp`), tested over TCP
   and POSIX shared memory. Moving 2000 messages takes about 100 ms over TCP and
@@ -149,7 +150,7 @@ layout over POSIX shared memory.
 cmake --preset debug && cmake --build --preset debug && ctest --preset debug
 ```
 
-The layers are fetched with CMake `FetchContent` at pinned revisions. To work
+The layers are fetched with CMake `FetchContent` at tagged releases. To work
 on a layer at the same time, point CMake at your checkout:
 
 ```bash

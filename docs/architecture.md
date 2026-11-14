@@ -273,7 +273,7 @@ systems.
 
 ## 13. Dependencies
 
-Fetched with CMake `FetchContent`, pinned: pushseg and pairring to commits
-until they are tagged, the wireforge runtime headers to `v0.5.0`. The
+Fetched with CMake `FetchContent` at tagged releases: pushseg `v0.1.0`,
+pairring `v0.1.0`, the wireforge runtime headers `v0.5.0`. The
 wireforge command line is needed only to regenerate code after changing the
 model; the build does not need Python.

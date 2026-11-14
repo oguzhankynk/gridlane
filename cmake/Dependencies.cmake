@@ -27,12 +27,14 @@ function(gridlane_fetch_dependencies)
   FetchContent_Declare(
     pushseg
     GIT_REPOSITORY https://github.com/oguzhankynk/pushseg.git
-    GIT_TAG a6fc1999d06e1909c7a882468ff4be99f2293192
+    GIT_TAG v0.1.0
+    GIT_SHALLOW TRUE
     SYSTEM)
   FetchContent_Declare(
     pairring
     GIT_REPOSITORY https://github.com/oguzhankynk/pairring.git
-    GIT_TAG 639a8a3758270c184f9d2c032c878ac9c9df9209
+    GIT_TAG v0.1.0
+    GIT_SHALLOW TRUE
     SYSTEM)
   # Only the runtime headers of wireforge are used. SOURCE_SUBDIR names a
   # directory without a CMakeLists.txt, so the repository is downloaded but
