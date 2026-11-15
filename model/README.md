@@ -12,7 +12,7 @@ model, generated with the code.
 ## Changing a message
 
 1. Edit `project.yaml`.
-2. Regenerate: `scripts/regenerate.sh` (needs `pip install wireforge==0.5.0`).
+2. Regenerate: `scripts/regenerate.sh` (needs `pip install wireforge==0.5.1`).
 3. Commit the model and the generated code together.
 
 CI regenerates the code from the model and fails if it differs from what is

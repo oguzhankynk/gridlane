@@ -153,14 +153,8 @@ int run(const gs::Options& opt) {
 
   pushseg::Context ctx(cfg, node, "worker", inst);
   Inbox inbox;
-  gs::ControlChannel<wi::Endpoint,
-                     gridlane::glue::MessageLink<gridlane::glue::PairringTransport,
-                                                 wi::Decoder,
-                                                 wi::Dispatcher,
-                                                 wi::kMaxFrameSize,
-                                                 wi::kRxBufferBytes>,
-                     Inbox>
-      ctrl(ctx, gs::kWorkerControlSegment, inbox);
+  gs::ControlChannel<wi::Endpoint, wi::Link<gridlane::glue::PairringTransport>, Inbox> ctrl(
+      ctx, gs::kWorkerControlSegment, inbox);
   log("started");
   ctrl.connect(coord_node,
                pushseg::SegKey{cfg.app_id("coordinator"),

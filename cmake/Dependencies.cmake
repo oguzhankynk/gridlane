@@ -42,7 +42,7 @@ function(gridlane_fetch_dependencies)
   FetchContent_Declare(
     wireforge
     GIT_REPOSITORY https://github.com/oguzhankynk/wireforge.git
-    GIT_TAG v0.5.0
+    GIT_TAG v0.5.1
     GIT_SHALLOW TRUE
     SOURCE_SUBDIR runtime/include
     SYSTEM)

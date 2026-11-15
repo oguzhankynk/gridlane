@@ -98,7 +98,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install wireforge
-        run: pip install wireforge==0.5.0
+        run: pip install wireforge==0.5.1
 
       - name: Regenerate and compare
         run: scripts/regenerate.sh --check

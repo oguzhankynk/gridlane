@@ -117,7 +117,7 @@ layout over POSIX shared memory.
 ## What works today
 
 - The three layers build together, fetched at tagged releases (pushseg `v0.1.0`,
-  pairring `v0.1.0`, wireforge `v0.5.0`).
+  pairring `v0.1.0`, wireforge `v0.5.1`).
 - **Data plane composition:** a pairring channel runs over pushseg through the
   region adapter (`include/gridlane/glue/pushseg_region.hpp`), tested over TCP
   and POSIX shared memory. Moving 2000 messages takes about 100 ms over TCP and
@@ -162,7 +162,7 @@ Requirements: Linux, a C++17 compiler (GCC 11+ / Clang 14+), CMake 3.25+.
 The comparisons with the reference need Python 3 with numpy; without it those
 tests are skipped.
 Regenerating the control plane code after changing the model needs
-`pip install wireforge==0.5.0` and `scripts/regenerate.sh` (see
+`pip install wireforge==0.5.1` and `scripts/regenerate.sh` (see
 [`model/README.md`](model/README.md)); building does not need Python.
 
 ## License

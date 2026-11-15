@@ -23,16 +23,8 @@ namespace wm = gridlane::control::worker;       // worker's messages
 namespace ci = cm::control;                     // coordinator's interface
 namespace wi = wm::control;                     // worker's interface
 
-using CoordinatorLink = glue::MessageLink<glue::PairringTransport,
-                                          ci::Decoder,
-                                          ci::Dispatcher,
-                                          ci::kMaxFrameSize,
-                                          ci::kRxBufferBytes>;
-using WorkerLink = glue::MessageLink<glue::PairringTransport,
-                                     wi::Decoder,
-                                     wi::Dispatcher,
-                                     wi::kMaxFrameSize,
-                                     wi::kRxBufferBytes>;
+using CoordinatorLink = ci::Link<glue::PairringTransport>;
+using WorkerLink = wi::Link<glue::PairringTransport>;
 
 // Remembers what arrived; a real worker would act on it.
 struct WorkerInbox final : wi::Handler {
@@ -178,7 +170,8 @@ TEST_P(ControlTest, VersionQueryHeartbeatsJobAndShutdown) {
 }
 
 // The largest message of the interface followed at once by another one: both
-// must arrive (see glue::MessageLink).
+// must arrive. One pairring message is one wireforge frame, so a frame of the
+// largest size fills the link's buffer exactly.
 TEST_P(ControlTest, FullSizeMessageFollowedByAnother) {
   const auto cfg = make_config(GetParam());
   ChannelEndpoint coord(cfg, 0);

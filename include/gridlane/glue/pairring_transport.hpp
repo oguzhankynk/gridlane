@@ -4,11 +4,9 @@
 /// @file
 /// @brief Feeds wireforge's generated codecs from a pairring channel.
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <pairring/channel.hpp>
-#include <wireforge/link.hpp>
 #include <wireforge/span.hpp>
 
 namespace gridlane {
@@ -47,27 +45,6 @@ public:
 private:
   pairring::Channel& channel_;
 };
-
-/// @brief A wireforge link for a message transport such as PairringTransport.
-///
-/// The generated `Link` alias sizes the receive buffer to the largest frame.
-/// An unframed link treats a read that fills the buffer as possibly cut short
-/// and drains the next read as its excess: right for a byte stream, but on a
-/// message transport the next read is the next message, and both are lost.
-/// One more byte of buffer keeps every frame of the interface shorter than the
-/// buffer.
-/// @tparam Transport The transport.
-/// @tparam Decoder The interface's Decoder.
-/// @tparam Dispatcher The interface's Dispatcher.
-/// @tparam MaxFrame The interface's kMaxFrameSize.
-/// @tparam RxBytes The interface's kRxBufferBytes.
-template <typename Transport,
-          typename Decoder,
-          typename Dispatcher,
-          std::size_t MaxFrame,
-          std::size_t RxBytes>
-using MessageLink =
-    wireforge::Link<Transport, Decoder, Dispatcher, MaxFrame + 1, std::max(RxBytes, MaxFrame + 1)>;
 
 }  // namespace glue
 }  // namespace gridlane

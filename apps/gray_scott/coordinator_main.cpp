@@ -62,13 +62,8 @@ struct WorkerInbox final : ci::Handler {
   std::vector<cm::ResultSummary> results;
 };
 
-using Channel = gs::ControlChannel<ci::Endpoint,
-                                   gridlane::glue::MessageLink<gridlane::glue::PairringTransport,
-                                                               ci::Decoder,
-                                                               ci::Dispatcher,
-                                                               ci::kMaxFrameSize,
-                                                               ci::kRxBufferBytes>,
-                                   WorkerInbox>;
+using Channel =
+    gs::ControlChannel<ci::Endpoint, ci::Link<gridlane::glue::PairringTransport>, WorkerInbox>;
 
 const char* phase_name(cm::Phase p) {
   switch (p) {

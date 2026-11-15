@@ -3,7 +3,7 @@
 # --check: regenerate into a temporary directory and fail if it differs.
 set -euo pipefail
 
-WIREFORGE_VERSION="0.5.0"
+WIREFORGE_VERSION="0.5.1"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 

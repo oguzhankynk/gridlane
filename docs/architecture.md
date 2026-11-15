@@ -181,9 +181,10 @@ The exact computation, the split of the work and the tolerances are in
 Workers report to their application's main thread, which alone sends on the
 control channel (a pairring channel has one sending thread).
 
-A wireforge link without framing receives one message per pairring message.
-Its receive buffer must be larger than the largest message:
-`glue::MessageLink` sizes it so (`include/gridlane/glue/pairring_transport.hpp`).
+The control interface uses wireforge without framing: one pairring message is
+one wireforge frame (`include/gridlane/glue/pairring_transport.hpp`). This
+needs wireforge 0.5.1 or later, where an unframed link keeps a frame of the
+largest size on a message transport.
 
 ## 9. Scenarios
 
@@ -274,6 +275,6 @@ systems.
 ## 13. Dependencies
 
 Fetched with CMake `FetchContent` at tagged releases: pushseg `v0.1.0`,
-pairring `v0.1.0`, the wireforge runtime headers `v0.5.0`. The
+pairring `v0.1.0`, the wireforge runtime headers `v0.5.1`. The
 wireforge command line is needed only to regenerate code after changing the
 model; the build does not need Python.
